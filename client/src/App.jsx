@@ -1,22 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export default function App() {
   const [accessToken, setAccessToken] = useState(null);
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
   const [playlistUrl, setPlaylistUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [personalize, setPersonalize] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("access_token");
+
     if (token) {
+      localStorage.setItem("access_token", token);
       setAccessToken(token);
       window.history.replaceState({}, document.title, "/");
+    } else {
+      const storedToken = localStorage.getItem("access_token");
+      if (storedToken) {
+        setAccessToken(storedToken);
+      }
     }
   }, []);
 
   const handleLogin = () => {
-    window.location.href = "http://localhost:8888/login";
+    if (!accessToken) {
+      window.location.href = "http://localhost:8888/auth/login";
+    }
   };
 
   const handleGenerate = async () => {
@@ -32,7 +42,7 @@ export default function App() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, personalize }),
       });
 
       const data = await res.json();
@@ -54,7 +64,9 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 text-white flex items-center justify-center px-4">
       <div className="text-center space-y-6 max-w-md w-full">
         <h1 className="text-5xl font-bold">🎧 Promptify</h1>
-        <p className="text-lg text-gray-300">Turn your vibes into Spotify playlists</p>
+        <p className="text-lg text-gray-300">
+          Turn your vibes into Spotify playlists
+        </p>
 
         {!accessToken ? (
           <button
@@ -72,6 +84,15 @@ export default function App() {
               onChange={(e) => setPrompt(e.target.value)}
               className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-600 placeholder-gray-400"
             />
+            <label className="flex items-center space-x-2 text-sm text-gray-300">
+              <input
+                type="checkbox"
+                checked={personalize}
+                onChange={() => setPersonalize(!personalize)}
+                className="form-checkbox h-4 w-4 text-purple-500"
+              />
+              <span>Personalize to My Taste</span>
+            </label>
             <button
               onClick={handleGenerate}
               className="bg-purple-500 hover:bg-purple-400 text-white px-6 py-2 rounded-full font-medium transition disabled:opacity-50"
