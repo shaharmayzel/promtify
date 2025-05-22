@@ -4,10 +4,10 @@ const router = express.Router();
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const REDIRECT_URI = "http://127.0.0.1:8888/callback";
+const REDIRECT_URI = "http://127.0.0.1:8888/auth/callback"; 
 
-router.get("/", (req, res) => {
-  const scope = "playlist-modify-public";
+router.get("/login", (req, res) => {
+  const scope = "playlist-modify-public user-read-private user-top-read";
   const authUrl =
     `https://accounts.spotify.com/authorize` +
     `?response_type=code&client_id=${CLIENT_ID}` +
@@ -18,6 +18,9 @@ router.get("/", (req, res) => {
 
 router.get("/callback", async (req, res) => {
   const code = req.query.code;
+  if (!code) {
+    return res.status(400).send("Missing authorization code.");
+  }
   try {
     const response = await axios.post(
       "https://accounts.spotify.com/api/token",
@@ -41,6 +44,7 @@ router.get("/callback", async (req, res) => {
       `http://localhost:5173?access_token=${access_token}&refresh_token=${refresh_token}`
     );
   } catch (err) {
+    console.error("Error during token exchange:", err.response?.data || err.message);
     res.status(500).send("Auth failed");
   }
 });
