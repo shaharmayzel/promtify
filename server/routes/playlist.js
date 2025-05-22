@@ -40,26 +40,26 @@ router.post("/", async (req, res) => {
         .join(", ");
 
       vibePrompt = `The user is located in ${userCountry}.
-They personally enjoy artists like ${topArtists}, and their recent favorite tracks include ${topTracks}.
+                They personally enjoy artists like ${topArtists}, and their recent favorite tracks include ${topTracks}.
 
-The following prompt may describe a playlist for themselves or for someone else — for example: children, guests, pets, a themed event, or a mood.
+                The following prompt may describe a playlist for themselves or for someone else — for example: children, guests, pets, a themed event, or a mood.
 
-Use your judgment to balance:
-- The user’s personal taste (when relevant)
-- Cultural appropriateness (especially for kids, local languages, or generational contexts)
-- Genre and setting norms (e.g., gym = energetic/high-BPM, dinner = calm/low-BPM, parties = upbeat/danceable, etc.)
-- Emotional and stylistic cues from the prompt
+                Use your judgment to balance:
+                - The user’s personal taste (when relevant)
+                - Cultural appropriateness (especially for kids, local languages, or generational contexts)
+                - Genre and setting norms (e.g., gym = energetic/high-BPM, dinner = calm/low-BPM, parties = upbeat/danceable, etc.)
+                - Emotional and stylistic cues from the prompt
 
-Here is the prompt to base the playlist on:
-"${prompt}"
+                Here is the prompt to base the playlist on:
+                "${prompt}"
 
-Return exactly 10 real, relevant songs that match the intent.
-Use this format:
-[
-  { "title": "Song Name", "artist": "Artist Name" },
-  ...
-]
-Do not include any explanation, comments, or text outside the array.`;
+                Return exactly 10 real, relevant songs that match the intent.
+                Use this format:
+                [
+                  { "title": "Song Name", "artist": "Artist Name" },
+                  ...
+                ]
+                Do not include any explanation, comments, or text outside the array.`;
     }
 
     const aiTracks = await getSongsFromAI(vibePrompt);
